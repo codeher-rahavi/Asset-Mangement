@@ -1,19 +1,22 @@
-import React, { Fragment } from "react";
+import React, { Fragment,useState} from "react";
 import picup from "../../images/picup.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faEye } from "@fortawesome/free-solid-svg-icons"
-import SignIn from "../SignIn/signIn";
 import { useNavigate } from "react-router-dom";
+import PassWord from "../../components/input/password";
+import RepeatPassWord from "../../components/input/repeatpass";
+import EmailInput from "../../components/input/email";
 
 
 
 const SignUp = () => {
     const navigate = useNavigate();
+    const [email,setEmail] =useState("");
+    const [passWord,setPassWord] = useState("");
+    const [error,setError] = useState(false);
     return (
         <Fragment>
-            <div className="grid sm:grid-cols-1 md:grid-cols-[600px_1frr] lg:grid-cols-[1000px_1fr] h-screen">
+            <div className="grid grid-cols-1 lg:grid-cols-[1000px_1fr] min-h-screen">
 
-                <div className="relative">
+                <div className="relative min-h-screen">
                     <div className="z-10 absolute top-[50px] left-[80px] w-[500px] p-5">
                         <p className="text-3xl w-[550px] leading-13">The only way <span className="text-blue-500">to do great work</span> is to <span className="text-blue-500">love what you do</span> </p>
                         <p className="ml-60 text-xl font-semibold">- Steve Jobs </p>
@@ -26,26 +29,15 @@ const SignUp = () => {
                         <form>
                             <div className="flex flex-col gap-3  h-[540px] w-[500px] gap-5 p-10">
                                 <h2 className="text-3xl font-semibold mb-5">Sign Up</h2>
-                                <div className="relative">
-                                    <FontAwesomeIcon
-                                        icon={faEnvelope}
-                                        className="absolute text-gray-300 text-xl left-2 top-3" />
-                                    <input type="text" placeholder="Your email" className="pl-10 input-box w-full" />
-                                </div>
-                                <div className="relative">
-                                    <FontAwesomeIcon
-                                        icon={faEye}
-                                        className="absolute text-gray-300 text-xl left-2 top-3" />
-                                    <input type="password" placeholder="Password" className="pl-10 input-box w-full" />
-                                </div>
-                                <div className="relative">
-                                    <FontAwesomeIcon
-                                        icon={faEye}
-                                        className="absolute text-gray-300 text-xl left-2 top-3" />
-                                    <input type="password" placeholder="Repeat Password" className="pl-10 input-box w-full" />
-                                </div>
+                                
+                                <EmailInput
+                                value={email}
+                                onChange = {(e) =>
+                                 setEmail(e.target.value)}/>
+                                <PassWord/>
+                                <RepeatPassWord/>
 
-                                <a class="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center" href="#">
+                                <a className="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center" href="#">
                                     SignUp
                                 </a>
 

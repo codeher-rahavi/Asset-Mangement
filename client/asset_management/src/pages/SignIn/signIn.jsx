@@ -1,33 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import signin from "../../images/signin.jpg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faEye } from "@fortawesome/free-solid-svg-icons";
-import SignUp from "../Signup/signUp";
 import { useNavigate } from "react-router-dom";
+import PassWord from "../../components/input/password";
+import EmailInput from "../../components/input/email";
 
 
 const SignIn = () => {
     const navigate = useNavigate();
+    const [email,setEmail] = useState("");
+
     return (
         <div className="grid grid-cols-[700px_1fr] h-screen">
+            
             <div className="relative">
                 <form onSubmit="">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 w-[400px]">
                         <h3 className="text-3xl mb-6 font-semibold">Log In</h3>
-                        <div className="relative">
-                            <FontAwesomeIcon
-                                icon={faEnvelope}
-                                className="text-lg text-gray-200 absolute mt-3 ml-2"
-                            />
-                            <input type="text" placeholder="email" className="cursor-pointer focus:outline-gray-400 pl-9 border border-gray-300 rounded-md p-2 w-[400px] " />
-                        </div>
-                        <div className="relative">
-                            <FontAwesomeIcon
-                                icon={faEye}
-                                className="text-lg text-gray-200 absolute mt-3 ml-2 "
-                            />
-                            <input type="password" placeholder="password" className="cursor-pointer focus:outline-gray-400 pl-9 border border-gray-300 rounded-md p-2 w-[400px] " />
-                        </div>
+                        <EmailInput/>
+                        <PassWord/>
 
                         <a class="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center" href="#">
                             Log In
@@ -49,7 +39,6 @@ const SignIn = () => {
                         <p className="mt-4">Don't have an account ? <span className="text-blue-700 cursor-pointer underline" onClick={() => navigate("/SignUp")}>Sign Up</span></p>
                     </div>
                 </form>
-
             </div>
             <div className="">
                 <div className="absolute z-10  top-[100px]  text-2xl w-[610px] ml-24">
