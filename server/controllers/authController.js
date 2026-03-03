@@ -60,8 +60,7 @@ exports.login = async (req, res) => {
 
     // 1. Find user using the Index (Fast)
     // We use .select("+password") if you had 'select: false' in your schema
-    const user = await User.findOne({ email }).collation({ locale: 'en', strength: 2 });
-
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
@@ -80,5 +79,7 @@ exports.login = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
+  
+  
   }
 };

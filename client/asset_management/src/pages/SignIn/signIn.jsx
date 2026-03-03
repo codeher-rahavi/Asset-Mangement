@@ -8,6 +8,10 @@ import EmailInput from "../../components/input/email";
 const SignIn = () => {
     const navigate = useNavigate();
 
+    const [email, setEmail] = useState("");
+    const [passWord, setPassWord] = useState("");
+
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -23,7 +27,7 @@ const SignIn = () => {
             if (response.status === 200) {
                 // Save user info to local storage if needed
                 localStorage.setItem("user", JSON.stringify(data.user));
-                navigate("/overview"); // Redirect to your overview page
+                navigate("/Overview"); // Redirect to your overview page
             } else {
                 alert(data.message);
             }
@@ -36,11 +40,17 @@ const SignIn = () => {
         <div className="grid sm:grid-cols-1 lg:grid-cols-[660px_1fr] min-h-screen">
 
             <div className="relative">
-                <form onSubmit={(e) => { handleSubmit(e) }}>
+                <form onSubmit={(e) => { handleLogin(e) }}>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 w-[400px]">
                         <h3 className="text-3xl mb-6 font-semibold">Log In</h3>
-                        <EmailInput />
-                        <PassWord />
+                        <EmailInput
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <PassWord
+                            value={passWord}
+                            onChange={(e) => setPassWord(e.target.value)}
+                        />
 
                         <button
                             type="submit"
