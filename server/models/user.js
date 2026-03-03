@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs")
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -12,29 +12,39 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
-  },
+    // This is the backend 'Safety Net'
+    validate: {
+      validator: function (v) {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(v);
+      },
+      message: "Password does not meet strength requirements!"
+    }
+  }
 });
 
 // THE PRE-SAVE HOOK: This runs automatically before .save() is called
-userSchema.pre("save", async function (next) {
-  // 1. Only hash the password if it has been modified (or is new)
-  if (!this.isModified("password")) return next();
+// THE UPDATED PRE-SAVE HOOK
+userSchema.pre("save", async function () { 
+  // 1. Only hash if modified
+  if (!this.isModified("password")) return;
 
   try {
-    // 2. Generate a Salt and Hash with a Salt Factor of 10
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
+    // No need to call next() here
   } catch (err) {
-    next(err);
+    throw err; // Throwing the error tells Mongoose the save failed
   }
 });
 
 // Create the Case-Insensitive Index we discussed earlier
-userSchema.index(
-  { email: 1 }, 
-  { unique: true, collation: { locale: 'en', strength: 2 } }
-);
+// userSchema.index(
+//   { email: 1 },
+//   { unique: true, collation: { locale: 'en', strength: 2 } }
+// );
 
+// Add this above module.exports in User.js
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 module.exports = mongoose.model("User", userSchema);

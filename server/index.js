@@ -1,16 +1,22 @@
 const express = require("express");
 const cors = require("cors");
-const { checkEmailAvailability } = require("./controllers/authController"); // Import logic
+const mongoose = require("mongoose"); // Ensure mongoose is required
+const authController = require("./controllers/authController");
+
+
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-// The endpoint for the frontend to hit
-app.post("/api/check-email", checkEmailAvailability);
+// REPLACE THIS WITH YOUR ACTUAL CONNECTION STRING
+const mongoURI = "mongodb+srv://rahavi-ganeshan:rahavi_user@cluster0.2x3aoq.mongodb.net/?appName=Cluster0"; 
 
-app.get("/", (req, res) => {
-  res.json({ data: "Server is running" });
-});
+mongoose.connect(mongoURI)
+  .then(() => console.log("✅ MongoDB Connected..."))
+  .catch(err => console.error("❌ MongoDB Connection Error:", err));
+
+app.post("/api/check-email", authController.checkEmailAvailability);
+app.post("/api/signup", authController.signup);
 
 app.listen(8000, () => console.log("Server running on port 8000"));

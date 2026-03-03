@@ -11,7 +11,32 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState(""); // For real-time email feedback
     const [passWord, setPassWord] = useState("");
+    const [strength, setStrength] = useState({ score: 0, message: "", color: "gray" });
     const [error, setError] = useState(false);
+
+
+    const evaluatePassword = (password) => {
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+
+        switch (score) {
+            case 0:
+            case 1: return { score, message: "Weak (Add numbers/symbols)", color: "red" };
+            case 2: return { score, message: "Medium (Add uppercase/symbols)", color: "orange" };
+            case 3: return { score, message: "Strong!", color: "green" };
+            case 4: return { score, message: "Very Strong!", color: "darkgreen" };
+            default: return { score: 0, message: "", color: "gray" };
+        }
+    };
+
+    const handlePasswordChange = (e) => {
+        const val = e.target.value;
+        setPassWord(val);
+        setStrength(evaluatePassword(val));
+    };
 
     // 1. Initialize the debounce hook
     const debouncedEmail = useDebounce(email, 500);
@@ -57,7 +82,7 @@ const SignUp = () => {
         validateEmail();
     }, [debouncedEmail]);
 
-    const handleSignup = async (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault(); // Prevents the page from refreshing
 
         // 1. Double check: Don't even try if the email is already marked as taken
@@ -120,11 +145,20 @@ const SignUp = () => {
                                     </span>
                                 </div>
 
-                                <PassWord value={passWord} onChange={(e) => setPassWord(e.target.value)} />
+                                <PassWord value={passWord} onChange={handlePasswordChange} />
+                                {passWord && (
+                                    <div className="mt-1">
+                                        <p className="text-[10px] mt-1" style={{ color: strength.color }}>
+                                            {strength.message}
+                                        </p>
+                                    </div>
+                                )}
                                 <RepeatPassWord />
 
                                 <button
-                                    className="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center"
+                                    type="submit"
+                                    onClick={handleSignUp}
+                                    className="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center disabled:bg-gray-400"
                                     disabled={status !== "✅ Email is available!"}
                                 >
                                     SignUp
