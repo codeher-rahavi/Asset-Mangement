@@ -18,5 +18,6 @@ mongoose.connect(mongoURI)
 
 app.post("/api/check-email", authController.checkEmailAvailability);
 app.post("/api/signup", authController.signup);
+app.post("/api/login", authController.login);
 
 app.listen(8000, () => console.log("Server running on port 8000"));

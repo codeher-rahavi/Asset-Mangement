@@ -8,11 +8,35 @@ import EmailInput from "../../components/input/email";
 const SignIn = () => {
     const navigate = useNavigate();
 
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:8000/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, passWord }),
+            });
+
+            const data = await response.json();
+
+            if (response.status === 200) {
+                // Save user info to local storage if needed
+                localStorage.setItem("user", JSON.stringify(data.user));
+                navigate("/overview"); // Redirect to your overview page
+            } else {
+                alert(data.message);
+            }
+        } catch (err) {
+            alert("Server Error");
+        }
+    };
+
     return (
         <div className="grid sm:grid-cols-1 lg:grid-cols-[660px_1fr] min-h-screen">
 
             <div className="relative">
-                <form onSubmit="">
+                <form onSubmit={(e) => { handleSubmit(e) }}>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 w-[400px]">
                         <h3 className="text-3xl mb-6 font-semibold">Log In</h3>
                         <EmailInput />
