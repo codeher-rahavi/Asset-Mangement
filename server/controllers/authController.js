@@ -69,28 +69,51 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    // Note: using 'passWord' to match your React state
     const { email, passWord } = req.body;
 
+    // 1. Validation check
     if (!email || !passWord) {
       return res.status(400).json({ message: "Please provide email and password" });
     }
 
-    // 1. Check user (Index search)
+    // 2. Find user (Using optimized Index search)
     const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) {
+
+    // 3. Security: Check if account is already locked
+    if (user && user.isLocked) {
+      return res.status(403).json({ 
+        message: "Account Locked. Please contact your Institution Administrator to unblock your account." 
+      });
+    }
+
+    // 4. Handle "User Not Found" OR "Wrong Password"
+    // We treat both the same for security (stops user enumeration)
+    if (!user || !(await user.comparePassword(passWord))) {
+      
+      if (user) {
+        user.loginAttempts += 1;
+        if (user.loginAttempts >= 3) {
+          user.isLocked = true;
+          user.lockReason = "Excessive failed login attempts";
+        }
+        await user.save();
+        return res.status(401).json({ 
+          message: `Invalid credentials. Attempt ${user.loginAttempts} of 3.` 
+        });
+      }
+
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
 
-    // 2. Compare hashed password
-    const isMatch = await user.comparePassword(passWord);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid Email or Password" });
-    }
+    // 5. Success Flow: Reset attempts
+    user.loginAttempts = 0;
+    await user.save();
 
-    // 3. Create Session (Token + Cookie)
+    // 6. Create Session (Token + Cookie)
     sendTokenResponse(user, 200, res);
+
   } catch (error) {
+    console.error("Login Error:", error);
     res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
