@@ -33,3 +33,15 @@ exports.protect = async (req, res, next) => {
     return res.status(401).json({ message: "Invalid or expired token." });
   }
 };
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // req.user was set by the previous 'protect' middleware
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ 
+        message: "Permission Denied: You do not have the rank to perform this action." 
+      });
+    }
+    next();
+  };
+};

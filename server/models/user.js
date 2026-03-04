@@ -31,12 +31,17 @@ const userSchema = new mongoose.Schema({
   lockReason: {
     type: String,
     default: ""
+  },
+  role: {
+    type: String,
+    enum: ["student", "admin"], // Only allows these two values
+    default: "student"
   }
 });
 
 // THE PRE-SAVE HOOK: This runs automatically before .save() is called
 // THE UPDATED PRE-SAVE HOOK
-userSchema.pre("save", async function () { 
+userSchema.pre("save", async function () {
   // 1. Only hash if modified
   if (!this.isModified("password")) return;
 
