@@ -1,52 +1,65 @@
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
-// 1. THIS IS FOR THE DEBOUNCED "REAL-TIME" CHECK
+// 1. Helper function to create JWT
+// Use a strong secret key in your .env file
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET || "SUPER_SECRET_KEY_2026", {
+    expiresIn: "1d", 
+  });
+};
+
+// 2. Helper to send token via Cookie (Enhanced Security)
+const sendTokenResponse = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  const cookieOptions = {
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+    httpOnly: true, // Prevents XSS (JavaScript can't read this)
+    secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
+    sameSite: "Strict", // Prevents CSRF
+  };
+
+  res.status(statusCode).cookie("jwt", token, cookieOptions).json({
+    success: true,
+    token, // Optional: send in body too for convenience
+    user: { id: user._id, email: user.email },
+  });
+};
+
+// --- ROUTES ---
+
 exports.checkEmailAvailability = async (req, res) => {
   try {
     const { email } = req.body;
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
+    // Using your optimized index check
     const userExists = await User.exists({ email: email.toLowerCase() });
 
     if (userExists) {
-      return res.status(409).json({ available: false, message: "Email already registered" });
+      return res.status(409).json({ available: false, message: "Email taken" });
     }
 
-    res.status(200).json({ available: true, message: "Email is available" });
+    res.status(200).json({ available: true, message: "Email available" });
   } catch (error) {
-    // 1. Look at your VS Code terminal for this output:
-    console.log("CRASH DATA:", error); 
-
-    // 2. This will send the actual error message to your Browser Console:
-    res.status(500).json({ 
-        message: "Server error", 
-        error: error.message,
-        stack: error.stack 
-    });
-}
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
 
-// 2. THIS IS FOR THE FINAL SIGNUP BUTTON CLICK
 exports.signup = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // We don't need to manually hash here because 
-    // the User.js "pre-save" hook handles it automatically!
     const newUser = new User({ email, password });
-
     await newUser.save();
 
-    res.status(201).json({
-      success: true,
-      message: "User created successfully"
-    });
+    // Give them a token immediately so they are logged in after signing up
+    sendTokenResponse(newUser, 201, res);
   } catch (error) {
-    // Final safety check: If the email was taken between the "check" and the "save"
     if (error.code === 11000) {
       return res.status(409).json({ message: "Email already exists" });
     }
@@ -56,30 +69,28 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    // Note: using 'passWord' to match your React state
+    const { email, passWord } = req.body;
 
-    // 1. Find user using the Index (Fast)
-    // We use .select("+password") if you had 'select: false' in your schema
-    const user = await User.findOne({ email });
+    if (!email || !passWord) {
+      return res.status(400).json({ message: "Please provide email and password" });
+    }
+
+    // 1. Check user (Index search)
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
 
-    // 2. Compare Password (Secure)
-    const isMatch = await user.comparePassword(password);
+    // 2. Compare hashed password
+    const isMatch = await user.comparePassword(passWord);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid Email or Password" });
     }
 
-    // 3. Success
-    res.status(200).json({ 
-      message: "Login Successful", 
-      user: { id: user._id, email: user.email } 
-    });
-
+    // 3. Create Session (Token + Cookie)
+    sendTokenResponse(user, 200, res);
   } catch (error) {
-    res.status(500).json({ message: "Login failed" });
-  
-  
+    res.status(500).json({ message: "Login failed", error: error.message });
   }
 };

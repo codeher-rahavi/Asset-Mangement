@@ -19,7 +19,10 @@ const SignIn = () => {
             const response = await fetch("http://localhost:8000/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, passWord }),
+                body: JSON.stringify({
+                    email: email,
+                    passWord: passWord // Map React's 'passWord' to Backend's 'password'
+                }),
             });
 
             const data = await response.json();
@@ -37,7 +40,7 @@ const SignIn = () => {
     };
 
     return (
-        <div className="grid sm:grid-cols-1 lg:grid-cols-[660px_1fr] min-h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-[600px_1fr] min-h-screen">
 
             <div className="relative">
                 <form onSubmit={(e) => { handleLogin(e) }}>
@@ -76,12 +79,12 @@ const SignIn = () => {
                     </div>
                 </form>
             </div>
-            <div className="relative">
+            <div className="relative ">
                 <div className="absolute z-10  top-[100px]  text-2xl w-[610px] ml-24">
                     <p className="text-3xl leading-12">The Future belongs to those who <span className="text-blue-600">believe</span> in the <span className="text-blue-600">beauty of theirs of Dreams..</span> </p>
                     <p className="text-xl ml-98 mt-2 font-semibold"> -Eleanor Roosevelt</p>
                 </div>
-                <img src={signin} alt="signin" className="w-full h-screen object-cover" />
+                <img src={signin} alt="signin" className="w-full h-full z-10 object-cover" />
             </div>
         </div>
     )
