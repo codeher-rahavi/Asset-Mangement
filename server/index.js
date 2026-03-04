@@ -3,11 +3,13 @@ const cors = require("cors");
 const mongoose = require("mongoose"); // Ensure mongoose is required
 const authController = require("./controllers/authController");
 
-
+const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
+app.use(cookieParser());
+
 
 // REPLACE THIS WITH YOUR ACTUAL CONNECTION STRING
 const mongoURI = "mongodb+srv://rahavi-ganeshan:rahavi_user@cluster0.2x3aoq.mongodb.net/?appName=Cluster0"; 
