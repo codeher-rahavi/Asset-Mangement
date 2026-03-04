@@ -42,7 +42,7 @@ const SignIn = () => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[600px_1fr] min-h-screen">
 
-            <div className="relative">
+            <div className="relative min-h-screen">
                 <form onSubmit={(e) => { handleLogin(e) }}>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 w-[400px]">
                         <h3 className="text-3xl mb-6 font-semibold">Log In</h3>
@@ -79,12 +79,12 @@ const SignIn = () => {
                     </div>
                 </form>
             </div>
-            <div className="relative ">
-                <div className="absolute z-10  top-[100px]  text-2xl w-[610px] ml-24">
+            <div className="relative min-h-screen">
+                <div className="absolute  top-[100px]  lg:text-2xl lg:w-[610px] ml-24 z-10 text-sm w-[300px]">
                     <p className="text-3xl leading-12">The Future belongs to those who <span className="text-blue-600">believe</span> in the <span className="text-blue-600">beauty of theirs of Dreams..</span> </p>
-                    <p className="text-xl ml-98 mt-2 font-semibold"> -Eleanor Roosevelt</p>
+                    <p className="text-xl ml-50 lg:ml-98 mt-2 font-semibold"> -Eleanor Roosevelt</p>
                 </div>
-                <img src={signin} alt="signin" className="w-full h-full z-10 object-cover" />
+                <img src={signin} alt="signin" className="z-10 w-full h-full z-10 object-cover" />
             </div>
         </div>
     )

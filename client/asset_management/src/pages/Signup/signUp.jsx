@@ -117,10 +117,10 @@ const SignUp = () => {
 
     return (
         <Fragment>
-            <div className="grid grid-cols-1 lg:grid-cols-[1000px_1fr] min-h-screen">
+            <div className="grid grid-cols-1 lg:grid-cols-[900px_1fr]  min-h-screen">
                 <div className="relative min-h-screen">
-                    <div className="z-10 absolute top-[50px] left-[80px] w-[500px] p-5">
-                        <p className="text-3xl w-[550px] leading-13">
+                    <div className="z-10 absolute top-[50px] left-[80px] w-[500px] p-5 ">
+                        <p className=" text-2xl lg:text-3xl w-[300px] lg:w-[550px] leading-13">
                             The only way <span className="text-blue-500">to do great work</span> is to <span className="text-blue-500">love what you do</span>
                         </p>
                         <p className="ml-60 text-xl font-semibold">- Steve Jobs </p>
@@ -128,7 +128,7 @@ const SignUp = () => {
                     <img src={picup} className="w-full h-full z-10" alt="img" />
                 </div>
 
-                <div className="relative">
+                <div className="relative min-h-screen">
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                         <form onSubmit={(e) => { handleSignUp(e) }}>
                             <div className="flex flex-col gap-3 h-[540px] w-[500px] p-10">
