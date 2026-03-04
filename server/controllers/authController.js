@@ -117,3 +117,29 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
+exports.adminUnblockUser = async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+
+    // 1. Find the user and reset their security status
+    const user = await User.findOneAndUpdate(
+      { email: userEmail.toLowerCase() },
+      { 
+        isLocked: false, 
+        loginAttempts: 0,
+        lockReason: "" 
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({ 
+      message: `User ${userEmail} has been successfully unblocked by the Administrator.` 
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Unblocking failed.", error: error.message });
+  }
+};
