@@ -19,6 +19,18 @@ const userSchema = new mongoose.Schema({
       },
       message: "Password does not meet strength requirements!"
     }
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  isLocked: {
+    type: Boolean,
+    default: false
+  },
+  lockReason: {
+    type: String,
+    default: ""
   }
 });
 
