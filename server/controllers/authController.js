@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 // Use a strong secret key in your .env file
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || "SUPER_SECRET_KEY_2026", {
-    expiresIn: "1d", 
+    expiresIn: "1d",
   });
 };
 
@@ -81,24 +81,24 @@ exports.login = async (req, res) => {
 
     // 3. Security: Check if account is already locked
     if (user && user.isLocked) {
-      return res.status(403).json({ 
-        message: "Account Locked. Please contact your Institution Administrator to unblock your account." 
+      return res.status(403).json({
+        message: "Account Locked. Please contact your Institution Administrator to unblock your account."
       });
     }
 
     // 4. Handle "User Not Found" OR "Wrong Password"
     // We treat both the same for security (stops user enumeration)
     if (!user || !(await user.comparePassword(passWord))) {
-      
+
       if (user) {
         user.loginAttempts += 1;
         if (user.loginAttempts >= 3) {
           user.isLocked = true;
-          user.lockReason = "Excessive failed login attempts";
+          user.lockReason = `Locked at ${new Date().toLocaleString()} due to excessive failures.`;
         }
         await user.save();
-        return res.status(401).json({ 
-          message: `Invalid credentials. Attempt ${user.loginAttempts} of 3.` 
+        return res.status(401).json({
+          message: `Invalid credentials. Attempt ${user.loginAttempts} of 3.`
         });
       }
 
@@ -124,10 +124,10 @@ exports.adminUnblockUser = async (req, res) => {
     // 1. Find the user and reset their security status
     const user = await User.findOneAndUpdate(
       { email: userEmail.toLowerCase() },
-      { 
-        isLocked: false, 
+      {
+        isLocked: false,
         loginAttempts: 0,
-        lockReason: "" 
+        lockReason: ""
       },
       { new: true }
     );
@@ -136,8 +136,8 @@ exports.adminUnblockUser = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    res.status(200).json({ 
-      message: `User ${userEmail} has been successfully unblocked by the Administrator.` 
+    res.status(200).json({
+      message: `User ${userEmail} has been successfully unblocked by the Administrator.`
     });
   } catch (error) {
     res.status(500).json({ message: "Unblocking failed.", error: error.message });
