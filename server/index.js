@@ -30,6 +30,7 @@ mongoose.connect(mongoURI)
 app.post("/api/check-email", authController.checkEmailAvailability);
 app.post("/api/signup", authController.signup);
 app.post("/api/login", loginLimiter, authController.login);
+app.get("/api/admin/locked-users", protect, restrictTo("admin"), authController.getLockedUsers);
 
 
 
