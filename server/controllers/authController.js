@@ -143,3 +143,13 @@ exports.adminUnblockUser = async (req, res) => {
     res.status(500).json({ message: "Unblocking failed.", error: error.message });
   }
 };
+
+exports.getLockedUsers = async (req, res) => {
+  try {
+    // Find only users where isLocked is true
+    const lockedUsers = await User.find({ isLocked: true }).select("email lockReason");
+    res.status(200).json({ status: "success", data: lockedUsers });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch locked users" });
+  }
+};
