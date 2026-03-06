@@ -39,6 +39,29 @@ const SignIn = () => {
         }
     };
 
+    const handleForgotPasswordClick = async () => {
+        const email = prompt("Please enter your registered email:");
+        if (!email) return;
+
+        try {
+            const response = await fetch("http://localhost:8000/api/forgotPassword", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email.toLowerCase() }) // Consistent with our Index
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Success! If that email exists, a reset link has been sent.");
+            } else {
+                alert(data.message || "Something went wrong.");
+            }
+        } catch (err) {
+            alert("Server connection failed.");
+        }
+    };
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-[600px_1fr] min-h-screen">
 
