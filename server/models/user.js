@@ -36,7 +36,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["student", "admin"], // Only allows these two values
     default: "student"
-  }
+  },
+  passwordResetToken: String,
+  passwordResetExpires: Date
 });
 
 // THE PRE-SAVE HOOK: This runs automatically before .save() is called
@@ -63,5 +65,21 @@ userSchema.pre("save", async function () {
 // Add this above module.exports in User.js
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
+
+  // Method to generate the reset token
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // Hash the token and save to database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // Set expiry to 10 minutes from now
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken; // Return unhashed token to send via email
+};
 };
 module.exports = mongoose.model("User", userSchema);

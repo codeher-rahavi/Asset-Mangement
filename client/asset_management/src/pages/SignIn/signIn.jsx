@@ -61,7 +61,7 @@ const SignIn = () => {
                         >
                             Log In
                         </button>
-                        <p className="text-blue-700 flex justify-end">Forget password?</p>
+                        <p className="text-blue-700 flex justify-end cursor-pointer">Forget password?</p>
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-gray-400 flex-1"></div>
                             <span>or</span>
