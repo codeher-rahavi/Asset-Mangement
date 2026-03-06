@@ -36,19 +36,7 @@ const Admin = () => {
     }
   };
 
-const loadSecurityData = async () => {
-  try {
-    const res = await fetch("http://localhost:8000/api/admin/locked-users", {
-      credentials: "include", // Essential for the 'protect' middleware to work
-    });
-    const result = await res.json();
-    if (result.status === "success") {
-      setLockedUsers(result.data);
-    }
-  } catch (err) {
-    console.error("Security fetch failed", err);
-  }
-};
+
 
   return (
     <>
