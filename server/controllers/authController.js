@@ -117,6 +117,52 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
+
+exports.forgotPassword = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(404).json({ message: "No user with that email." });
+
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  // In a real app, use Nodemailer here to send the email
+  const resetURL = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`;
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Token sent to email!',
+    resetURL // Only for testing; in production, send this via email only!
+  });
+};
+
+exports.resetPassword = async (req, res) => {
+  // 1. Hash the token from the URL to match DB version
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+  // 2. Find user with valid token and not expired
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  });
+
+  if (!user) return res.status(400).json({ message: "Token is invalid or expired." });
+
+  // 3. Update password and clear reset fields
+  user.password = req.body.password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  
+  // Important: On successful reset, unblock the user if they were locked!
+  user.isLocked = false;
+  user.loginAttempts = 0;
+
+  await user.save();
+  
+  // 4. Send new JWT so they are logged in automatically
+  sendTokenResponse(user, 200, res);
+};
+
+
 exports.adminUnblockUser = async (req, res) => {
   try {
     const { userEmail } = req.body;
