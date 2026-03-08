@@ -7,6 +7,7 @@ import BuildingOverView from "./pages/building/buildingOverview";
 import 'preline';
 import Admin from "./pages/Admin/AdminPage";
 import UserProfile from "./pages/User/userProfile";
+import ResetPasswordPage from "./pages/ResetpasswordPage/resetpasswordPage";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="Overview" element={<BuildingOverView/>}/>
           <Route path="Admin" element={<Admin/>}/>
           <Route path="User" element={<UserProfile/>}/>
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         </Routes>
       </div>
     </Fragment>

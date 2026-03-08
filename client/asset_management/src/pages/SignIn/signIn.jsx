@@ -27,7 +27,7 @@ const SignIn = () => {
 
             const data = await response.json();
 
-            if (response.status === 200) {
+            if (response.ok) {
                 // Save user info to local storage if needed
                 localStorage.setItem("user", JSON.stringify(data.user));
                 navigate("/Overview"); // Redirect to your overview page
@@ -51,6 +51,9 @@ const SignIn = () => {
             });
 
             const data = await response.json();
+
+            // THIS IS THE KEY: Log it to the console so you can see it AFTER the prompt closes
+            console.log("SERVER RESPONSE DATA:", data);
 
             if (response.ok) {
                 alert("Success! If that email exists, a reset link has been sent.");
@@ -84,7 +87,7 @@ const SignIn = () => {
                         >
                             Log In
                         </button>
-                        <p className="text-blue-700 flex justify-end cursor-pointer">Forget password?</p>
+                        <p onClick={handleForgotPasswordClick} className="text-blue-700 flex justify-end cursor-pointer">Forget password?</p>
                         <div className="flex items-center gap-4">
                             <div className="h-px bg-gray-400 flex-1"></div>
                             <span>or</span>

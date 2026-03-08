@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 // 1. Helper function to create JWT
 // Use a strong secret key in your .env file
@@ -126,8 +127,7 @@ exports.forgotPassword = async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // In a real app, use Nodemailer here to send the email
-  const resetURL = `${req.protocol}://${req.get('host')}/api/resetPassword/${resetToken}`;
-
+  const resetURL = `http://localhost:5173/reset-password/${resetToken}`;
   res.status(200).json({
     status: 'success',
     message: 'Token sent to email!',
@@ -148,16 +148,16 @@ exports.resetPassword = async (req, res) => {
   if (!user) return res.status(400).json({ message: "Token is invalid or expired." });
 
   // 3. Update password and clear reset fields
-  user.password = req.body.password;
+  user.password = req.body.password; // Must match the 'password' key sent from React
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-  
+
   // Important: On successful reset, unblock the user if they were locked!
   user.isLocked = false;
   user.loginAttempts = 0;
 
   await user.save();
-  
+
   // 4. Send new JWT so they are logged in automatically
   sendTokenResponse(user, 200, res);
 };

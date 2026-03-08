@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs")
 
@@ -62,11 +63,7 @@ userSchema.pre("save", async function () {
 //   { unique: true, collation: { locale: 'en', strength: 2 } }
 // );
 
-// Add this above module.exports in User.js
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-
-  // Method to generate the reset token
+ // Method to generate the reset token
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
@@ -81,5 +78,9 @@ userSchema.methods.createPasswordResetToken = function() {
 
   return resetToken; // Return unhashed token to send via email
 };
+
+// Add this above module.exports in User.js
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 module.exports = mongoose.model("User", userSchema);
